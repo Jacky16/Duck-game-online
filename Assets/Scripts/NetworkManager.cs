@@ -18,7 +18,7 @@ public class NetworkManager : MonoBehaviour
     const int port = 6543;
     private void Awake()
     {
-      if(instance != null && instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(instance);
         }
@@ -48,7 +48,7 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    public void ConnectToServer(string nick, string password)
+    public void LogIn(string nick, string password)
     {
         try
         {
@@ -84,6 +84,49 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Recibo ping");
             writer.WriteLine("1");
             writer.Flush();
+        }
+        else if (data.Contains("2"))
+        {
+            Debug.Log("Logeo Correcto");
+            Debug.Log(data.Split('/')[1]);
+            writer.Flush();
+        }
+        else if (data == "3")
+        {
+            Debug.Log("Logeo Incorrecto");
+            writer.Flush();
+        }else if(data == "UserNick")
+        {
+            Debug.Log(data.Split('/')[1]);
+            writer.Flush();
+        }
+    }
+
+    public void Register(string nick, string password, string email)
+    {
+        try
+        {
+            //Instancia la clase para gestionar la conexion y el streaming de datos
+            socket = new TcpClient(host, port);
+            stream = socket.GetStream();
+
+            //Si hay streaming de datos hay conexion
+            connected = true;
+
+            //Instancio clases de lectura y escritura
+            writer = new StreamWriter(stream);
+            reader = new StreamReader(stream);
+
+            //Envio 0 con nick y ususario separados por / ya que son los valores que he definido en el servidor
+            writer.WriteLine("Register" + "/" + nick + "/" + password + "/" + email);
+
+            //Limpio el writer de datos
+            writer.Flush();
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
         }
     }
 }
