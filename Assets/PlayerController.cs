@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
         }else if (stream.IsReading)
         {
-            enemyPos = (Vector3) stream.ReceiveNext();
+            enemyPos = (Vector2) stream.ReceiveNext();
         }
     }
 }
