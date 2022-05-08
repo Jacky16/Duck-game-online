@@ -191,5 +191,10 @@ public class NetworkManager : MonoBehaviour
     {
         SceneManager.LoadScene("ClassesScene");
     }
+    
+    public void LoadRoomsScene()
+    {
+        SceneManager.LoadScene("RoomScene");
+    }
 }
 

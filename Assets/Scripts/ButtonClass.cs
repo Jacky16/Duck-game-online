@@ -26,6 +26,7 @@ public class ButtonClass : MonoBehaviour
     {
         Debug.Log(currentClass.GetNameClass());
         NetworkManager.instance.SetClassToCurrentUser(currentClass);
+        NetworkManager.instance.LoadRoomsScene();
     }
 
 }
