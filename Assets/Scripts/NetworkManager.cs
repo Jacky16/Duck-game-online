@@ -51,6 +51,53 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    private void ManageData(string data)
+    {
+        //Si recibo ping devuelvo 1 como respuesta al servidor
+        if (data == "ping")
+        {
+            Debug.Log("Recibo ping");
+            writer.WriteLine("1");
+            writer.Flush();
+        }
+        else if (data.Split('/')[0] == "2")
+        {
+            Debug.Log("Logeo Correcto");
+            //Obtenemos el nombre de usuario y el ID que enviamos desde el servidor
+            SetNewUser(data);
+            
+            LoadClassesScene();
+            writer.Flush();
+        }
+        else if (data == "3")
+        {
+            Debug.Log("Logeo Incorrecto");
+            writer.Flush();
+        }
+        else if(data == "UserNick")
+        {
+            Debug.Log(data.Split('/')[1]);
+            writer.Flush();
+        }
+        else if (data.Split('|')[0] == "GetAllClasses")
+        {
+            string [] classes = data.Split('|');
+            SetAvaiableClasses(classes);
+        }
+        else if(data.Split('/')[0] == "4"){
+            string[] userAndClasses = data.Split('|');
+
+            //Obtener datos del usuario
+            SetNewUser(userAndClasses[0]);
+            //Obtener datos de las clases
+            SetSingleClassToUser(userAndClasses[1]);
+
+            LoadRoomsScene();
+            
+            Debug.Log("Logeo con clase asignada");
+        }
+    }
+
     public void LogIn(string nick, string password)
     {
         try
@@ -78,44 +125,6 @@ public class NetworkManager : MonoBehaviour
             Debug.Log(e.ToString());
         }
     }
-
-    private void ManageData(string data)
-    {
-        //Si recibo ping devuelvo 1 como respuesta al servidor
-        if (data == "ping")
-        {
-            Debug.Log("Recibo ping");
-            writer.WriteLine("1");
-            writer.Flush();
-        }
-        else if (data.Split('/')[0] == "2")
-        {
-            Debug.Log("Logeo Correcto");
-            //Obtenemos el nombre de usuario y el ID que enviamos desde el servidor
-            string nick = data.Split('/')[1];
-            string id = data.Split('/')[2];
-            
-            SetNewUser(new User(nick,int.Parse(id)));
-            LoadClassesScene();
-            writer.Flush();
-        }
-        else if (data == "3")
-        {
-            Debug.Log("Logeo Incorrecto");
-            writer.Flush();
-        }
-        else if(data == "UserNick")
-        {
-            Debug.Log(data.Split('/')[1]);
-            writer.Flush();
-        }
-        else if (data.Split('|')[0] == "GetAllClasses")
-        {
-            string [] classes = data.Split('|');
-            SetAvaiableAvatars(classes);
-        }
-    }
-
     public void Register(string nick, string password, string email)
     {
         try
@@ -144,17 +153,56 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    public User GetCurrentUser()
+    public void SendInfoToAddClassAndPlayer(string className)
     {
-        return currentUser;       
+        try
+        {
+            //Instancia la clase para gestionar la conexion y el streaming de datos
+            socket = new TcpClient(host, port);
+            stream = socket.GetStream();
+
+            //Si hay streaming de datos hay conexion
+            connected = true;
+
+            //Instancio clases de lectura y escritura
+            writer = new StreamWriter(stream);
+            reader = new StreamReader(stream);
+
+            //Envio 0 con nick y ususario separados por / ya que son los valores que he definido en el servidor
+            writer.WriteLine("AddClassUser" + "/" + currentUser.GetId() + "/" + className);
+
+            //Limpio el writer de datos
+            writer.Flush();
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+
+    }
+        #region Getters
+        public User GetCurrentUser()
+    {
+        return currentUser;
     }
 
-    void SetNewUser(User user)
+    public List<Class> GetAvaiableClasses()
     {
-        currentUser = user;
+        return avaiableAvatars;
     }
 
-    void SetAvaiableAvatars(string[] avatars)
+    #endregion
+    
+    #region Setters
+    void SetNewUser(string user)
+    {
+        string nick = user.Split('/')[1];
+        string id = user.Split('/')[2];
+        currentUser = new User(nick, int.Parse(id));
+    }
+
+    void SetAvaiableClasses(string[] avatars)
     {
         //Elimino el identificador del tipo de datoa
         List<String> listStringsAvatars = new List<string>(avatars);
@@ -178,23 +226,34 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    void SetSingleClassToUser(string _class)
+    {
+        string[] fieldsAvatar = _class.Split('/');
+        string name = fieldsAvatar[0];
+        float speed = float.Parse(fieldsAvatar[1]);
+        float fireRate = float.Parse(fieldsAvatar[2]);
+        float life = float.Parse(fieldsAvatar[3]);
+
+        Class avatar = new Class(name, speed, fireRate, life);
+        SetClassToCurrentUser(avatar);
+    }
     public void SetClassToCurrentUser(Class classToSet)
     {
         currentUser.SetClass(classToSet);
-    }
+        SendInfoToAddClassAndPlayer(classToSet.GetNameClass());
 
-    public List<Class> GetAvaiableClasses()
-    {
-        return avaiableAvatars;
+
     }
+    #endregion
+    
     public void LoadClassesScene()
     {
         SceneManager.LoadScene("ClassesScene");
     }
-    
     public void LoadRoomsScene()
     {
         SceneManager.LoadScene("RoomScene");
     }
+
 }
 

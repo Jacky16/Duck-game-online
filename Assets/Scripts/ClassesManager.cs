@@ -19,7 +19,7 @@ public class ClassesManager : MonoBehaviour
     }
     private void Start()
     {
-        Invoke("AddClasses", 0.5f);
+        Invoke("AddClasses",1f);
     }
 
     void AddClasses()
