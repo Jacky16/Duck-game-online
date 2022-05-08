@@ -16,6 +16,9 @@ public class NetworkManager : MonoBehaviour
     bool connected;
     const string host = "192.168.1.27";
     const int port = 6543;
+    User currentUser;
+    [SerializeField]
+    List<Avatar> avaiableAvatars = new List<Avatar>();
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -38,7 +41,6 @@ public class NetworkManager : MonoBehaviour
             {
                 //Leo una linea de datos
                 string data = reader.ReadLine();
-
                 //Si los datos no son nulos los trabajo
                 if (data != null)
                 {
@@ -85,20 +87,31 @@ public class NetworkManager : MonoBehaviour
             writer.WriteLine("1");
             writer.Flush();
         }
-        else if (data.Contains("2"))
+        else if (data.Split('/')[0] == "2")
         {
             Debug.Log("Logeo Correcto");
-            Debug.Log(data.Split('/')[1]);
+            //Obtenemos el nombre de usuario y el ID que enviamos desde el servidor
+            string nick = data.Split('/')[1];
+            string id = data.Split('/')[2];
+            
+            SetNewUser(new User(nick,int.Parse(id)));
+            
             writer.Flush();
         }
         else if (data == "3")
         {
             Debug.Log("Logeo Incorrecto");
             writer.Flush();
-        }else if(data == "UserNick")
+        }
+        else if(data == "UserNick")
         {
             Debug.Log(data.Split('/')[1]);
             writer.Flush();
+        }
+        else if (data.Split('|')[0] == "GetAllClasses")
+        {
+            string [] classes = data.Split('|');
+            SetAvaiableAvatars(classes);
         }
     }
 
@@ -129,4 +142,44 @@ public class NetworkManager : MonoBehaviour
             Debug.Log(e.ToString());
         }
     }
+
+    public User GetCurrentUser()
+    {
+        return currentUser;       
+    }
+
+    void SetNewUser(User user)
+    {
+        currentUser = user;
+    }
+
+    void SetAvaiableAvatars(string[] avatars)
+    {
+        //Elimino el identificador del tipo de datoa
+        List<String> listStringsAvatars = new List<string>(avatars);
+        if (listStringsAvatars[0].Contains("GetAllClasses"))
+        {
+            listStringsAvatars.RemoveAt(0);
+        }
+        //Recorro los campos de cada avatar
+        for (int i = 0; i < listStringsAvatars.Count; i++)
+        {
+            //Los divido por '/' y despues los asigno en 'Avatar'
+            string[] fieldsAvatar = listStringsAvatars[i].Split('/');
+
+            string name = fieldsAvatar[0];
+            float speed = float.Parse(fieldsAvatar[1]);
+            float fireRate = float.Parse(fieldsAvatar[2]);
+            float life = float.Parse(fieldsAvatar[3]);
+
+            Avatar avatar = new Avatar(name, speed, fireRate, life);
+            avaiableAvatars.Add(avatar);
+        }
+    }
+
+    public Avatar [] GetAvaiableAvatars()
+    {
+        return avaiableAvatars.ToArray();
+    }
 }
+

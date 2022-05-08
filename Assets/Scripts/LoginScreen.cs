@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -61,5 +62,10 @@ public class LoginScreen : MonoBehaviour
         emailRegisterText.text = "";
         nickRegisterText.text = "";
         registerPasswordText.text = "";
+    }
+
+    public void LoadClassesScene()
+    {
+        SceneManager.LoadScene("ClassesScene");
     }
 }
