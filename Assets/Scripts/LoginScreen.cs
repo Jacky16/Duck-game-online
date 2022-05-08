@@ -64,8 +64,5 @@ public class LoginScreen : MonoBehaviour
         registerPasswordText.text = "";
     }
 
-    public void LoadClassesScene()
-    {
-        SceneManager.LoadScene("ClassesScene");
-    }
+   
 }

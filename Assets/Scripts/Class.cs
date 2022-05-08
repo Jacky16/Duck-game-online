@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Avatar : ScriptableObject
+public class Class : ScriptableObject
 {
     string name;
     float life;
@@ -11,7 +11,7 @@ public class Avatar : ScriptableObject
     public enum ClassType { HEAVY, LIGHT }
     ClassType classType;
 
-    public Avatar(string name,float speed, float fireRate, float life)
+    public Class(string name,float speed, float fireRate, float life)
     {
         this.name = name;
         this.speed = speed;
@@ -26,6 +26,21 @@ public class Avatar : ScriptableObject
                 classType = ClassType.LIGHT;
                 break;
         }
+    }
+    public string GetNameClass(){
+        return name;
+    }
+    public float GetSpeed()
+    {
+        return speed;
+    }
+    public float GetFireRate()
+    {
+        return fireRate;
+    }
+    public float GetLife()
+    {
+        return life;
     }
     public ClassType GetClass()
     {

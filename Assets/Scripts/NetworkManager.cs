@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class NetworkManager : MonoBehaviour
     const int port = 6543;
     User currentUser;
     [SerializeField]
-    List<Avatar> avaiableAvatars = new List<Avatar>();
+    List<Class> avaiableAvatars = new List<Class>();
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -95,7 +96,7 @@ public class NetworkManager : MonoBehaviour
             string id = data.Split('/')[2];
             
             SetNewUser(new User(nick,int.Parse(id)));
-            
+            LoadClassesScene();
             writer.Flush();
         }
         else if (data == "3")
@@ -172,14 +173,23 @@ public class NetworkManager : MonoBehaviour
             float fireRate = float.Parse(fieldsAvatar[2]);
             float life = float.Parse(fieldsAvatar[3]);
 
-            Avatar avatar = new Avatar(name, speed, fireRate, life);
+            Class avatar = new Class(name, speed, fireRate, life);
             avaiableAvatars.Add(avatar);
         }
     }
 
-    public Avatar [] GetAvaiableAvatars()
+    public void SetClassToCurrentUser(Class classToSet)
     {
-        return avaiableAvatars.ToArray();
+        currentUser.SetClass(classToSet);
+    }
+
+    public List<Class> GetAvaiableClasses()
+    {
+        return avaiableAvatars;
+    }
+    public void LoadClassesScene()
+    {
+        SceneManager.LoadScene("ClassesScene");
     }
 }
 

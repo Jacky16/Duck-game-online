@@ -6,7 +6,7 @@ public class User: ScriptableObject
 {
     string nick;
     int idInDatabase;
-    Avatar avatar;
+    Class classs;
 
 
     public User(string username,int id)
@@ -23,9 +23,9 @@ public class User: ScriptableObject
     {
         return idInDatabase;
     }
-    public void SetAvatar(Avatar avatar)
+    public void SetClass(Class _class)
     {
-        this.avatar = avatar;
+        this.classs = _class;
     }
 
 }
