@@ -7,15 +7,34 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] Transform spawnPlayer1;
     [SerializeField] Transform spawnPlayer2;
+    Class.ClassType playerClass;
     private void Awake()
     {
+
+        playerClass = NetworkManager.instance.GetCurrentUser().GetClass().GetClassType();
+      
+
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Player", spawnPlayer1.position, Quaternion.identity);
+            SpawnPlayer(spawnPlayer1.position);
         }
         else
         {
-            PhotonNetwork.Instantiate("Player",spawnPlayer2.position, Quaternion.identity);
+            SpawnPlayer(spawnPlayer2.position);
+        }
+    }
+
+    void SpawnPlayer(Vector3 posSpawn)
+    {
+        switch (playerClass)
+        {
+            case Class.ClassType.LIGHT:
+                PhotonNetwork.Instantiate("Player-Light", posSpawn, Quaternion.identity);
+                break;
+                
+            case Class.ClassType.HEAVY:
+                PhotonNetwork.Instantiate("Player-Heavy", posSpawn, Quaternion.identity);
+                break;
         }
     }
 }

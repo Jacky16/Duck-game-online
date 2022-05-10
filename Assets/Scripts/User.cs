@@ -15,7 +15,7 @@ public class User: ScriptableObject
         this.idInDatabase = id;
     }
 
-    public string GetNick()
+    public string GetNickName()
     {
         return nick;
     }
@@ -26,6 +26,10 @@ public class User: ScriptableObject
     public void SetClass(Class _class)
     {
         this.classs = _class;
+    }
+    public Class GetClass()
+    {
+        return classs;
     }
 
 }

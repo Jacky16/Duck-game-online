@@ -15,7 +15,7 @@ public class ClassesManager : MonoBehaviour
 
     private void Awake()
     {
-        textUser.text += NetworkManager.instance.GetCurrentUser().GetNick();
+        textUser.text += NetworkManager.instance.GetCurrentUser().GetNickName();
     }
     private void Start()
     {

@@ -42,7 +42,7 @@ public class Class : ScriptableObject
     {
         return life;
     }
-    public ClassType GetClass()
+    public ClassType GetClassType()
     {
         return classType;
     }

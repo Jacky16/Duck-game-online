@@ -71,6 +71,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.LoadLevel("GameplayScene");
             }
         }
+        newPlayer.NickName = NetworkManager.instance.GetCurrentUser().GetNickName();
+
     }
 
     public void LeaveCurrentRoom()

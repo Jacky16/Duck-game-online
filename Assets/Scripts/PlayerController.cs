@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     Rigidbody2D rb2d;
     Vector2 axis;
+    SpriteRenderer spriteRenderer;
     bool isFlipped;
 
     PhotonView photoView;
@@ -32,14 +33,20 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         public Quaternion rotation;
     }
     EnemyTransform enemyTransform;
+    public User currentUserPlayer { get; private set; }
     private void Awake()
     {
         photoView = GetComponent<PhotonView>();
         rb2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         PhotonNetwork.SendRate = 50;
         PhotonNetwork.SerializationRate = 50;
+    }
+    private void Start()
+    {
+        currentUserPlayer = NetworkManager.instance.GetCurrentUser();
     }
     private void Update()
     {
@@ -90,7 +97,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         //Flip player
         isFlipped = !isFlipped;
-        transform.Rotate(0f, 180f, 0f);
+        spriteRenderer.flipX = isFlipped;
     }
 
     void Jump()
@@ -130,12 +137,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
+            stream.SendNext(spriteRenderer.flipX);
 
         }
         else if (stream.IsReading)
         {
             enemyTransform.position = (Vector3) stream.ReceiveNext();
             enemyTransform.rotation = (Quaternion) stream.ReceiveNext();
+            spriteRenderer.flipX = (bool)stream.ReceiveNext();
         }
     }
     private void OnDrawGizmos()
