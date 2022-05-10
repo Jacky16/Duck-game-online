@@ -16,9 +16,11 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     bool isGrounded;
 
     [Header("Shoot")]
-    [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform bulletSpawn;
     [SerializeField] float shootForce;
+    [SerializeField] float shootDamage;
+    [SerializeField] float shootCooldown;
+    float shootCooldownTimer;
 
     Rigidbody2D rb2d;
     Vector2 axis;
@@ -33,6 +35,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         public Quaternion rotation;
     }
     EnemyTransform enemyTransform;
+    public Class.ClassType classType;
     public User currentUserPlayer { get; private set; }
     private void Awake()
     {
@@ -66,8 +69,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     private void FixedUpdate()
     {     
-        rb2d.velocity = (new Vector2(axis.x * speed, rb2d.velocity.y));
-             
+        rb2d.velocity = (new Vector2(axis.x * speed, rb2d.velocity.y));         
     }
 
     void CheckInputs()
@@ -97,7 +99,9 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         //Flip player
         isFlipped = !isFlipped;
-        spriteRenderer.flipX = isFlipped;
+        spriteRenderer.flipX = isFlipped;  
+        
+        bulletSpawn.localPosition = new Vector3(bulletSpawn.localPosition.x * -1, bulletSpawn.localPosition.y, bulletSpawn.localPosition.z);
     }
 
     void Jump()
@@ -106,12 +110,26 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     }
     void Shoot()
     {
-        GameObject bullet;
+        GameObject bullet = null;
         
         if(PhotonNetwork.CurrentRoom != null)
         {
-            bullet = PhotonNetwork.Instantiate(bulletPrefab.name, bulletSpawn.position, transform.rotation);
-            bullet.GetComponent<Rigidbody2D>().velocity = bullet.transform.right * shootForce;
+            switch (classType) {
+                case Class.ClassType.LIGHT:
+                    bullet = PhotonNetwork.Instantiate("LightBullet", bulletSpawn.position, bulletSpawn.rotation);                  
+                    break;
+                    
+                case Class.ClassType.HEAVY:
+                    bullet = PhotonNetwork.Instantiate("HeavyBullet", bulletSpawn.position, bulletSpawn.rotation);                 
+                    break;
+            }
+        }
+        if( bullet != null)
+        {
+            if(isFlipped)
+            
+            bullet.GetComponent<Rigidbody2D>().velocity = isFlipped ? bullet.transform.right * -shootForce : bullet.transform.right * shootForce;
+            bullet.GetComponent<Bullet>().SetDamage(shootDamage);            
         }
     }
     private void SmoothReplicate()
@@ -129,8 +147,6 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         Destroy(this.gameObject);
     }
-
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)

@@ -6,17 +6,21 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     PhotonView photonView;
+    float damage = 10;
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
     }
   
-
+    public void SetDamage(float _damage)
+    {
+        damage = _damage;
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Player"))
-            collision.GetComponent<PlayerController>().Damage();
-        
+        if (collision.TryGetComponent(out HealthPlayer healthPlayer))
+            healthPlayer.DoDamage(damage);
+
         photonView.RPC("NetworkDestroy", RpcTarget.All);
     }
     [PunRPC]

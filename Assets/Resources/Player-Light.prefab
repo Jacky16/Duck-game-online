@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 570615819180637191, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 570615819180637191, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.06
+      objectReference: {fileID: 0}
     - target: {fileID: 1715365491256690380, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -17,7 +25,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1715365491256690380, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.41
       objectReference: {fileID: 0}
     - target: {fileID: 1715365491256690380, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_LocalPosition.z
@@ -51,13 +59,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3074778460556477426, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: bbc3705a5055a8b47970bf2f0411e890, type: 2}
+    - target: {fileID: 3652018812725567244, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 79c64531ca1af844fa73b27a6568b9df, type: 3}
     - target: {fileID: 3652018812725567244, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3652018812725567244, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3652018812725567244, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_Color.r
@@ -66,6 +82,10 @@ PrefabInstance:
     - target: {fileID: 4196444453024443997, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_Name
       value: Player-Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825712279337667905, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: sceneViewId
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
