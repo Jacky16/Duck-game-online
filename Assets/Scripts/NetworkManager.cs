@@ -91,7 +91,6 @@ public class NetworkManager : MonoBehaviour
             SetNewUser(userAndClasses[0]);
             //Obtener datos de las clases
             SetSingleClassToUser(userAndClasses[1]);
-
             LoadRoomsScene();
             
             Debug.Log("Logeo con clase asignada");
@@ -235,14 +234,12 @@ public class NetworkManager : MonoBehaviour
         float life = float.Parse(fieldsAvatar[3]);
 
         Class avatar = new Class(name, speed, fireRate, life);
-        SetClassToCurrentUser(avatar);
+        currentUser.SetClass(avatar);
     }
     public void SetClassToCurrentUser(Class classToSet)
     {
-        currentUser.SetClass(classToSet);
+        //Enviar al servidor la clase para añadirla a la lista de clases del usuario en la BDD
         SendInfoToAddClassAndPlayer(classToSet.GetNameClass());
-
-
     }
     #endregion
     
