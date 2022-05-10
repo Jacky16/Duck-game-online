@@ -39,12 +39,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        Debug.Log("Accedido al Lobby");
+        Debug.Log("Accedido al Lobby");        
     }
 
     public void CreateRoom(string nameRoom)
     {
-        PhotonNetwork.CreateRoom(nameRoom, new RoomOptions { MaxPlayers = 2});
+        PhotonNetwork.CreateRoom(nameRoom, new RoomOptions { MaxPlayers = 2});        
     }
     public void JoinRoom(string nameRoom)
     {
@@ -71,5 +71,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.LoadLevel("GameplayScene");
             }
         }
+    }
+
+    public void LeaveCurrentRoom()
+    {
+        PhotonNetwork.LeaveRoom(true);
     }
 }
