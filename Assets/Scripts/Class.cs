@@ -17,15 +17,16 @@ public class Class : ScriptableObject
         this.speed = speed;
         this.life = life;
         this.fireRate = fireRate;
-        switch (name)
-        {
-            case "Heavy":
-                classType = ClassType.HEAVY;
-                break;
-            case "Light":
-                classType = ClassType.LIGHT;
-                break;
-        }
+        System.Enum.TryParse(name,true, out classType);
+        //switch (name)
+        //{
+        //    case "Heavy":
+        //        classType = ClassType.HEAVY;
+        //        break;
+        //    case "Light":
+        //        classType = ClassType.LIGHT;
+        //        break;
+        //}
     }
     public string GetNameClass(){
         return name;

@@ -29,7 +29,6 @@ public class LoginScreen : MonoBehaviour
         backButton.onClick.AddListener(OnBackButtonClick);
     }
 
-    
 
     private void OnRegisterButtonClick()
     {

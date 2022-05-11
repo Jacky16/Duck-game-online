@@ -25,7 +25,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     Rigidbody2D rb2d;
     Vector2 axis;
     SpriteRenderer spriteRenderer;
-    bool isFlipped;
+    HealthPlayer healthPlayer;
+    public bool isFlipped { get; private set; }
 
     PhotonView photoView;
     Animator anim;
@@ -33,7 +34,9 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         public Vector3 position;
         public Quaternion rotation;
+        public float currHealth;
     }
+    
     EnemyTransform enemyTransform;
     public Class.ClassType classType;
     public User currentUserPlayer { get; private set; }
@@ -43,7 +46,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         rb2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+        healthPlayer = GetComponent<HealthPlayer>();
+        
         PhotonNetwork.SendRate = 50;
         PhotonNetwork.SerializationRate = 50;
     }
@@ -63,8 +67,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         else
         {
             SmoothReplicate();
-        }
-        
+        }        
     }
 
     private void FixedUpdate()
@@ -95,7 +98,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void Flip()
+    void Flip()
     {
         //Flip player
         isFlipped = !isFlipped;
@@ -111,58 +114,55 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     void Shoot()
     {
         GameObject bullet = null;
-        
-        if(PhotonNetwork.CurrentRoom != null)
+        float rotationZ = isFlipped ? 180 : 0;
+        if (PhotonNetwork.CurrentRoom != null)
         {
             switch (classType) {
                 case Class.ClassType.LIGHT:
-                    bullet = PhotonNetwork.Instantiate("LightBullet", bulletSpawn.position, bulletSpawn.rotation);                  
+                    bullet = PhotonNetwork.Instantiate("LightBullet", bulletSpawn.position, Quaternion.Euler(0, 0, rotationZ));
                     break;
                     
                 case Class.ClassType.HEAVY:
-                    bullet = PhotonNetwork.Instantiate("HeavyBullet", bulletSpawn.position, bulletSpawn.rotation);                 
+                    bullet = PhotonNetwork.Instantiate("HeavyBullet", bulletSpawn.position, Quaternion.Euler(0, 0, rotationZ));
                     break;
             }
         }
         if( bullet != null)
         {
-            if(isFlipped)
-            
-            bullet.GetComponent<Rigidbody2D>().velocity = isFlipped ? bullet.transform.right * -shootForce : bullet.transform.right * shootForce;
-            bullet.GetComponent<Bullet>().SetDamage(shootDamage);            
+            bullet.GetComponent<Bullet>().SetDamage(shootDamage);
         }
+    }
+
+    [PunRPC]
+    public void Damage()
+    {
+        Debug.Log("Player vida: " + healthPlayer.GetHealth());
     }
     private void SmoothReplicate()
     {
         rb2d.position = enemyTransform.position;
         transform.rotation = enemyTransform.rotation;
-        
     }
-    public void Damage()
-    {
-        photonView.RPC("NetworkDamage", RpcTarget.All);
-    }
-    [PunRPC]
-    private void NetworkDamage()
-    {
-        Destroy(this.gameObject);
-    }
+    
+    
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
-            stream.SendNext(spriteRenderer.flipX);
-
+            stream.SendNext(spriteRenderer.flipX);         
+            stream.SendNext(healthPlayer.GetHealth());
         }
         else if (stream.IsReading)
         {
             enemyTransform.position = (Vector3) stream.ReceiveNext();
             enemyTransform.rotation = (Quaternion) stream.ReceiveNext();
             spriteRenderer.flipX = (bool)stream.ReceiveNext();
+            enemyTransform.currHealth = (float)stream.ReceiveNext();
         }
     }
+    
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - groundCheckDistance, transform.position.z));
