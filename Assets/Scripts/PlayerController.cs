@@ -54,6 +54,15 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     private void Start()
     {
         currentUserPlayer = NetworkManager.instance.GetCurrentUser();
+
+        Class playerClass = currentUserPlayer.GetClass();
+        speed = playerClass.GetSpeed();
+        shootDamage = playerClass.GetDamage();
+        shootCooldown = playerClass.GetFireRate();
+        
+        healthPlayer.SetLife(playerClass.GetLife());
+        Debug.Log("Vida nada mas empezar: " + healthPlayer.GetHealth());
+        
     }
     private void Update()
     {
@@ -133,15 +142,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         }
     }
 
-    [PunRPC]
-    public void Damage()
-    {
-        Debug.Log("Player vida: " + healthPlayer.GetHealth());
-    }
+    
     private void SmoothReplicate()
     {
         rb2d.position = enemyTransform.position;
         transform.rotation = enemyTransform.rotation;
+        //healthPlayer.SetLife(enemyTransform.currHealth);
     }
     
     
@@ -152,14 +158,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
             stream.SendNext(spriteRenderer.flipX);         
-            stream.SendNext(healthPlayer.GetHealth());
+            //stream.SendNext(healthPlayer.GetHealth());
         }
         else if (stream.IsReading)
         {
             enemyTransform.position = (Vector3) stream.ReceiveNext();
             enemyTransform.rotation = (Quaternion) stream.ReceiveNext();
             spriteRenderer.flipX = (bool)stream.ReceiveNext();
-            enemyTransform.currHealth = (float)stream.ReceiveNext();
+            //enemyTransform.currHealth = (float)stream.ReceiveNext();
         }
     }
     

@@ -4,29 +4,25 @@ using UnityEngine;
 
 public class Class : ScriptableObject
 {
+    int idDatabase;
     string name;
     float life;
     float speed;
     float fireRate;
+    float damage;
     public enum ClassType { HEAVY, LIGHT }
     ClassType classType;
 
-    public Class(string name,float speed, float fireRate, float life)
+    public Class(string name,float speed, float fireRate, float life,float damage, int idBDD)
     {
         this.name = name;
         this.speed = speed;
         this.life = life;
         this.fireRate = fireRate;
+        this.damage = damage;
+        this.idDatabase = idBDD;
         System.Enum.TryParse(name,true, out classType);
-        //switch (name)
-        //{
-        //    case "Heavy":
-        //        classType = ClassType.HEAVY;
-        //        break;
-        //    case "Light":
-        //        classType = ClassType.LIGHT;
-        //        break;
-        //}
+        
     }
     public string GetNameClass(){
         return name;
@@ -50,5 +46,9 @@ public class Class : ScriptableObject
     public void SetClass(ClassType classType)
     {
         this.classType = classType;
+    }
+    public float GetDamage()
+    {
+        return damage;
     }
 }

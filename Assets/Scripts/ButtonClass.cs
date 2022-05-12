@@ -25,7 +25,13 @@ public class ButtonClass : MonoBehaviour
     public void OnClick()
     {
         Debug.Log(currentClass.GetNameClass());
-        NetworkManager.instance.SetClassToCurrentUser(currentClass);
+        
+        //Enviamos la clase al servidor para que la añada a la BDD
+        NetworkManager.instance.SendInfoToAddClassAndPlayer(currentClass.GetNameClass());
+        
+        //Asignamos la clase seleccionada al jugador
+        NetworkManager.instance.AssingClassToUser(currentClass);
+        
         NetworkManager.instance.LoadRoomsScene();
     }
 

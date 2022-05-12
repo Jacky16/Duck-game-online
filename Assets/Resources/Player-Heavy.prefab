@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: ObservedComponents.Array.data[1]
       value: 
       objectReference: {fileID: 6592421613389912795}
+    - target: {fileID: 31365181177063699, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1715365491256690380, guid: f19e80ad978d787479dae9483c3bc999, type: 3}
       propertyPath: m_RootOrder
       value: 0

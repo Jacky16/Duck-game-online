@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,6 +52,7 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    #region Main Functions
     private void ManageData(string data)
     {
         //Si recibo ping devuelvo 1 como respuesta al servidor
@@ -89,14 +91,15 @@ public class NetworkManager : MonoBehaviour
 
             //Obtener datos del usuario
             SetNewUser(userAndClasses[0]);
+            
             //Obtener datos de las clases
             SetSingleClassToUser(userAndClasses[1]);
+            
             LoadRoomsScene();
             
             Debug.Log("Logeo con clase asignada");
         }
     }
-
     public void LogIn(string nick, string password)
     {
         try
@@ -151,7 +154,8 @@ public class NetworkManager : MonoBehaviour
             Debug.Log(e.ToString());
         }
     }
-
+    
+    //Enviar al servidor la clase para añadirla a la lista de clases del usuario en la BDD
     public void SendInfoToAddClassAndPlayer(string className)
     {
         try
@@ -180,8 +184,11 @@ public class NetworkManager : MonoBehaviour
         }
 
     }
-        #region Getters
-        public User GetCurrentUser()
+
+    #endregion
+
+    #region Getters
+    public User GetCurrentUser()
     {
         return currentUser;
     }
@@ -198,9 +205,11 @@ public class NetworkManager : MonoBehaviour
     {
         string nick = user.Split('/')[1];
         string id = user.Split('/')[2];
+        PhotonNetwork.NickName = nick;
         currentUser = new User(nick, int.Parse(id));
     }
 
+    //Recoger todas las clases que hay en el servidor
     void SetAvaiableClasses(string[] avatars)
     {
         //Elimino el identificador del tipo de datoa
@@ -219,12 +228,15 @@ public class NetworkManager : MonoBehaviour
             float speed = float.Parse(fieldsAvatar[1]);
             float fireRate = float.Parse(fieldsAvatar[2]);
             float life = float.Parse(fieldsAvatar[3]);
+            float damage = float.Parse(fieldsAvatar[4]);
+            int idDatabase = int.Parse(fieldsAvatar[5]);
 
-            Class avatar = new Class(name, speed, fireRate, life);
+            Class avatar = new Class(name, speed, fireRate, life,damage,idDatabase);
             avaiableAvatars.Add(avatar);
         }
     }
 
+    //Asignar una clase a un usuario que viene del servidor
     void SetSingleClassToUser(string _class)
     {
         string[] fieldsAvatar = _class.Split('/');
@@ -232,17 +244,20 @@ public class NetworkManager : MonoBehaviour
         float speed = float.Parse(fieldsAvatar[1]);
         float fireRate = float.Parse(fieldsAvatar[2]);
         float life = float.Parse(fieldsAvatar[3]);
+        float damage = float.Parse(fieldsAvatar[4]);
+        int idDatabase = int.Parse(fieldsAvatar[5]);
 
-        Class avatar = new Class(name, speed, fireRate, life);
+        Class avatar = new Class(name, speed, fireRate, life,damage,idDatabase);
         currentUser.SetClass(avatar);
     }
-    public void SetClassToCurrentUser(Class classToSet)
+
+    public void AssingClassToUser(Class _class)
     {
-        //Enviar al servidor la clase para añadirla a la lista de clases del usuario en la BDD
-        SendInfoToAddClassAndPlayer(classToSet.GetNameClass());
+        currentUser.SetClass(_class);
     }
+
     #endregion
-    
+
     public void LoadClassesScene()
     {
         SceneManager.LoadScene("ClassesScene");

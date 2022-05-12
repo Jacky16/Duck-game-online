@@ -8,6 +8,7 @@ using Photon.Realtime;
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     public static PhotonManager instance;
+    public string nickEnemy;
     private void Awake()
     {
         if(instance != null && instance != this)
@@ -50,13 +51,28 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinRoom(nameRoom);
     }
-
     public override void OnJoinedRoom()
     {
         Debug.Log("Me he unido a la Sala" + PhotonNetwork.CurrentRoom.Name + "con" 
             + PhotonNetwork.CurrentRoom.PlayerCount + "Jugadores conectados a ellas");
-    }
+        
 
+        
+        
+        Debug.Log("Has joined: " + NetworkManager.instance.GetCurrentUser().GetNickName());
+
+        foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+        {
+            if (player.NickName != PhotonNetwork.NickName)
+            {
+                nickEnemy = player.NickName;
+
+                //Conseguir Query para obtneer clase enemigo
+            }
+        }           
+      
+    }
+    
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         Debug.Log("Error al entrar en la sala, Error: " + returnCode + " que significa: " + message);
@@ -64,19 +80,23 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        Debug.Log("My nick is: " + NetworkManager.instance.GetCurrentUser().GetNickName());
+        //Get all players in the room
+       
         if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                nickEnemy = newPlayer.NickName;
                 PhotonNetwork.LoadLevel("GameplayScene");
             }
-        }
-        newPlayer.NickName = NetworkManager.instance.GetCurrentUser().GetNickName();
-
+        }     
     }
 
     public void LeaveCurrentRoom()
     {
         PhotonNetwork.LeaveRoom(true);
     }
+
+    
 }

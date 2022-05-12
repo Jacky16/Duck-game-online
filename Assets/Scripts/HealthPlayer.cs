@@ -8,12 +8,15 @@ using Photon.Pun;
 
 public class HealthPlayer : MonoBehaviour
 {
-    [SerializeField] float life;
+    float life;
     [SerializeField] Image imageLife;
-    PhotonView photonView;
+    public PhotonView photonView {  get;  private set; }
 
     float maxLife;
     Animator anim;
+
+    float countdown = 0;
+    float timer = 0;
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -21,8 +24,13 @@ public class HealthPlayer : MonoBehaviour
     }
     private void Start()
     {
-        maxLife = life;
+        //maxLife = life;
     }
+    private void Update()
+    {
+        
+    }
+
     public void AddHealth(float amount)
     {
         life += amount;
@@ -30,24 +38,31 @@ public class HealthPlayer : MonoBehaviour
         {
             life = maxLife;
         }
-        imageLife.DOFillAmount(life / maxLife, 0.5f);
+        UpdateUI();
     }
+    [PunRPC]
     public void TakeDamage(float damage)
     {
-        life -= damage;
-        print(life);
+        print("Vida antes del damage: " + life);
+        life -= 10;
+        Debug.Log("TakeDamage");
         if (life <= 0)
-        {
-            imageLife.DOFillAmount(life / maxLife, 0.5f);
+        {            
             life = 0;
             Die();
         }
-        imageLife.DOFillAmount(life / maxLife, 0.5f);
         
+        UpdateUI();
+        print(life);
 
     }
 
- 
+    void UpdateUI()
+    {
+        imageLife.DOFillAmount(life / maxLife, 0.5f);
+    }
+
+
     public float GetHealth()
     {
         return life;
@@ -60,5 +75,12 @@ public class HealthPlayer : MonoBehaviour
     public bool IsMíne()
     {
         return photonView.IsMine;
+    }
+
+    public void SetLife(float v)
+    {
+        life = v;
+        maxLife = life;     
+        UpdateUI();
     }
 }

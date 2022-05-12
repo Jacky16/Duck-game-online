@@ -12,14 +12,17 @@ public class GameManager : MonoBehaviour
     {
 
         playerClass = NetworkManager.instance.GetCurrentUser().GetClass().GetClassType();
-      
 
         if (PhotonNetwork.IsMasterClient)
         {
+            Debug.Log("My enemy is: " + PhotonManager.instance.nickEnemy + "and i am: " + PhotonNetwork.NickName);
+
             SpawnPlayer(spawnPlayer1.position);
         }
         else
         {
+            Debug.Log("My enemy is: " + PhotonManager.instance.nickEnemy + "and i am: " + PhotonNetwork.NickName);
+
             SpawnPlayer(spawnPlayer2.position);
         }
     }

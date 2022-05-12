@@ -22,6 +22,7 @@ public class ClassesManager : MonoBehaviour
         Invoke("AddClasses",1f);
     }
 
+    //Añadir las classes en la UI
     void AddClasses()
     {
         foreach (Class c in NetworkManager.instance.GetAvaiableClasses())

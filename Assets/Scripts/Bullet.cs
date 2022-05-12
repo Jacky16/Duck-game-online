@@ -7,7 +7,6 @@ public class Bullet : MonoBehaviour
 {
     PhotonView photonView;
     Rigidbody2D rb2d;
-    Vector3 dir;
     float damage = 10;
     HealthPlayer healthPlayerEnemy;
     private void Awake()
@@ -26,25 +25,13 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out HealthPlayer _healthPlayerEnemy))
+        if (collision.TryGetComponent(out HealthPlayer healthPlayer))
         {
-            _healthPlayerEnemy.GetComponent<PlayerController>().photonView.RPC("Damage", RpcTarget.All);
+            healthPlayer.photonView.RPC("TakeDamage", RpcTarget.All, damage);
         }
         photonView.RPC("NetworkDestroy", RpcTarget.All);
     }
-
-    [PunRPC]
-    void UpdateLifePlayer()
-    {
-        HealthPlayer[] healthPlayers = FindObjectsOfType<HealthPlayer>();
-        foreach (HealthPlayer hp in healthPlayers)
-        {
-            if (healthPlayerEnemy == hp)
-            {
-                hp.TakeDamage(damage);
-            }
-        }
-    }
+    
     [PunRPC]
     void NetworkDestroy()
     {
