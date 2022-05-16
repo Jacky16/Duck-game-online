@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,37 +8,46 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] Transform spawnPlayer1;
     [SerializeField] Transform spawnPlayer2;
-    Class.ClassType playerClass;
+    public static Class playerClass;
+    
+    
     private void Awake()
     {
 
-        playerClass = NetworkManager.instance.GetCurrentUser().GetClass().GetClassType();
-
-        if (PhotonNetwork.IsMasterClient)
+        foreach (Player player in PhotonNetwork.PlayerList)
         {
-            Debug.Log("My enemy is: " + PhotonManager.instance.nickEnemy + "and i am: " + PhotonNetwork.NickName);
-
-            SpawnPlayer(spawnPlayer1.position);
-        }
-        else
-        {
-            Debug.Log("My enemy is: " + PhotonManager.instance.nickEnemy + "and i am: " + PhotonNetwork.NickName);
-
-            SpawnPlayer(spawnPlayer2.position);
-        }
-    }
-
-    void SpawnPlayer(Vector3 posSpawn)
-    {
-        switch (playerClass)
-        {
-            case Class.ClassType.LIGHT:
-                PhotonNetwork.Instantiate("Player-Light", posSpawn, Quaternion.identity);
-                break;
+            if (player.NickName == PhotonNetwork.NickName)
+            {
+                Class classPlayerInRoom = NetworkManager.instance.GetClassByNickname(player.NickName);
                 
-            case Class.ClassType.HEAVY:
-                PhotonNetwork.Instantiate("Player-Heavy", posSpawn, Quaternion.identity);
-                break;
-        }
+                Transform posSpawn;
+                
+                if (player.IsMasterClient)
+                {
+                    posSpawn = spawnPlayer1;
+                    playerClass = classPlayerInRoom;
+                }
+                else
+                {
+                    posSpawn = spawnPlayer2;
+                }
+                
+                switch (classPlayerInRoom.GetNameClass())
+                {
+                    case "Light":
+
+                        PhotonNetwork.Instantiate("Player-Light", posSpawn.position, Quaternion.identity);
+                        Debug.Log("El nombre del player es: " + player.NickName + " y tiene la clase " + classPlayerInRoom.GetNameClass());
+
+                        break;
+
+                    case "Heavy":
+
+                        PhotonNetwork.Instantiate("Player-Heavy", posSpawn.position, Quaternion.identity);
+                        Debug.Log("El nombre del player es: " + player.NickName + "y tiene la clase " + classPlayerInRoom.GetNameClass());
+                        break;
+                }
+            }
+        }         
     }
 }

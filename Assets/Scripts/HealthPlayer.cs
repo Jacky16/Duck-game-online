@@ -5,6 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class HealthPlayer : MonoBehaviour
 {
@@ -15,12 +16,12 @@ public class HealthPlayer : MonoBehaviour
     float maxLife;
     Animator anim;
 
-    float countdown = 0;
-    float timer = 0;
     private void Awake()
     {
         anim = GetComponent<Animator>();
         photonView = GetComponent<PhotonView>();
+        
+        
     }
     private void Start()
     {

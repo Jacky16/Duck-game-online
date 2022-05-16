@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,7 +19,7 @@ public class NetworkManager : MonoBehaviour
     bool connected;
     const string host = "192.168.1.27";
     const int port = 6543;
-    User currentUser;
+    public static User currentUser = new User();
     [SerializeField]
     List<Class> avaiableAvatars = new List<Class>();
     private void Awake()
@@ -66,7 +67,7 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log("Logeo Correcto");
             //Obtenemos el nombre de usuario y el ID que enviamos desde el servidor
-            SetNewUser(data);
+            //SetNewUser(data);
             
             LoadClassesScene();
             writer.Flush();
@@ -86,18 +87,23 @@ public class NetworkManager : MonoBehaviour
             string [] classes = data.Split('|');
             SetAvaiableClasses(classes);
         }
-        else if(data.Split('/')[0] == "4"){
+        else if(data.Split('|')[0] == "4"){
             string[] userAndClasses = data.Split('|');
 
+            string[] dataUser = userAndClasses[1].Split('/');
+            
             //Obtener datos del usuario
-            SetNewUser(userAndClasses[0]);
-            
-            //Obtener datos de las clases
-            SetSingleClassToUser(userAndClasses[1]);
-            
+            SetNewUserWithClass(dataUser);
+
             LoadRoomsScene();
             
             Debug.Log("Logeo con clase asignada");
+        }else if(data.Split('|')[0] == "Class")
+        {
+            //Enviamos el clase enemigo a PhotonManager
+            PhotonManager.instance.enemyClass = GetClassByString(data.Split('|')[1]);
+            print($"La clase del enemigo es {data.Split('|')[1]} y yo soy {PhotonNetwork.NickName}");
+            
         }
     }
     public void LogIn(string nick, string password)
@@ -185,6 +191,34 @@ public class NetworkManager : MonoBehaviour
 
     }
 
+    public void SendNicknameToGetClass(string nickname)
+    {
+        try
+        {
+            //Instancia la clase para gestionar la conexion y el streaming de datos
+            socket = new TcpClient(host, port);
+            stream = socket.GetStream();
+
+            //Si hay streaming de datos hay conexion
+            connected = true;
+
+            //Instancio clases de lectura y escritura
+            writer = new StreamWriter(stream);
+            reader = new StreamReader(stream);
+
+            //Envio 0 con nick y ususario separados por / ya que son los valores que he definido en el servidor
+            writer.WriteLine("GetClassByNickName" + "/" + nickname);
+
+            //Limpio el writer de datos
+            writer.Flush();
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+    }
+
     #endregion
 
     #region Getters
@@ -201,12 +235,21 @@ public class NetworkManager : MonoBehaviour
     #endregion
     
     #region Setters
-    void SetNewUser(string user)
+    void SetNewUserWithClass(string [] userWithClass)
     {
-        string nick = user.Split('/')[1];
-        string id = user.Split('/')[2];
+        string nick = userWithClass[0];
+        string id = userWithClass[1];
+        string idClassAssignded = userWithClass[2];
         PhotonNetwork.NickName = nick;
-        currentUser = new User(nick, int.Parse(id));
+
+        currentUser.nick = nick;
+        currentUser.idInDatabase = int.Parse(id);
+        currentUser.idClassAssigned = int.Parse(idClassAssignded);
+
+        
+
+        Debug.Log("El usuario que ha iniciado sesion es: " + nick + " y su clase asignada es " + idClassAssignded);
+   
     }
 
     //Recoger todas las clases que hay en el servidor
@@ -231,13 +274,28 @@ public class NetworkManager : MonoBehaviour
             float damage = float.Parse(fieldsAvatar[4]);
             int idDatabase = int.Parse(fieldsAvatar[5]);
 
-            Class avatar = new Class(name, speed, fireRate, life,damage,idDatabase);
+            Class avatar = new Class();
+            avatar.name = name;
+            avatar.speed = speed;
+            avatar.fireRate = fireRate;
+            avatar.life = life;
+            avatar.damage = damage;
+            avatar.idDatabase = idDatabase;
+
+
             avaiableAvatars.Add(avatar);
+        }
+        foreach (Class c in avaiableAvatars)
+        {
+            if (c.idDatabase == currentUser.GetIdClassAssigned())
+            {
+                currentUser.SetClass(c);
+            }
         }
     }
 
     //Asignar una clase a un usuario que viene del servidor
-    void SetSingleClassToUser(string _class)
+    public Class GetClassByString(string _class)
     {
         string[] fieldsAvatar = _class.Split('/');
         string name = fieldsAvatar[0];
@@ -247,9 +305,29 @@ public class NetworkManager : MonoBehaviour
         float damage = float.Parse(fieldsAvatar[4]);
         int idDatabase = int.Parse(fieldsAvatar[5]);
 
-        Class avatar = new Class(name, speed, fireRate, life,damage,idDatabase);
-        currentUser.SetClass(avatar);
+         Class classToReturn = new Class(name, speed, fireRate, life,damage,idDatabase);
+        return classToReturn;
     }
+
+    public Class GetClassByNickname(string nicknamePlayer)
+    {
+        foreach (Class c in avaiableAvatars)
+        {
+            if (c.GetIdBDD() == currentUser.GetIdClassAssigned())
+            {
+                if (nicknamePlayer == currentUser.GetNickName())
+                {
+                    currentUser.SetClass(c);
+                    currentUser.SetClass(c);
+                    Debug.Log("Mi raza es: " + c.GetNameClass());
+                    return c;
+                    
+                }
+            }
+        }
+        return null;
+    }
+
 
     public void AssingClassToUser(Class _class)
     {

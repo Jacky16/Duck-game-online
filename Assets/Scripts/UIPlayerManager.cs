@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class UIPlayerManager : MonoBehaviour
 {
@@ -15,10 +16,9 @@ public class UIPlayerManager : MonoBehaviour
 
     void LoadNamePlayer()
     {
-        
-        foreach (var  player in PhotonNetwork.PlayerList)
+        foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if (player.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+            if (player.NickName == PhotonNetwork.NickName)
             {
                 namePlayerText.text = player.NickName;
             }

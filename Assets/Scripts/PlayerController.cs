@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     HealthPlayer healthPlayer;
     public bool isFlipped { get; private set; }
 
-    PhotonView photoView;
+    public PhotonView photoView { get; private set; }
     Animator anim;
     struct EnemyTransform
     {
@@ -38,8 +39,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     }
     
     EnemyTransform enemyTransform;
-    public Class.ClassType classType;
-    public User currentUserPlayer { get; private set; }
+    public Class classPlayer;
+
+    public PlayerController(Class _class)
+    {
+        classPlayer = _class;
+    }
     private void Awake()
     {
         photoView = GetComponent<PhotonView>();
@@ -50,19 +55,35 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         
         PhotonNetwork.SendRate = 50;
         PhotonNetwork.SerializationRate = 50;
+
+        //List of all the players in room photon
+        Debug.Log($"El {gameObject.name} tiene el nick {NetworkManager.currentUser.GetNickName()}");
+        if (photonView.IsMine)
+        {
+            classPlayer = NetworkManager.currentUser.GetClass();
+            speed = classPlayer.GetSpeed();
+            shootDamage = classPlayer.GetDamage();
+            shootCooldown = classPlayer.GetFireRate();
+            healthPlayer.SetLife(classPlayer.GetLife());
+            Debug.Log($"Soy {PhotonNetwork.NickName} mi clase es {classPlayer.GetNameClass()} mi speed es {speed} y mi vida es {healthPlayer.GetHealth()}");
+        }
+        else
+        {
+            classPlayer = PhotonManager.instance.enemyClass;
+            speed = classPlayer.GetSpeed();
+            shootDamage = classPlayer.GetDamage();
+            shootCooldown = classPlayer.GetFireRate();
+            healthPlayer.SetLife(classPlayer.GetLife());
+            Debug.Log($"Soy {PhotonNetwork.NickName} mi clase es {classPlayer.GetNameClass()} mi speed es {speed} y mi vida es {healthPlayer.GetHealth()}");
+        }
+
+
     }
     private void Start()
     {
-        currentUserPlayer = NetworkManager.instance.GetCurrentUser();
+        
 
-        Class playerClass = currentUserPlayer.GetClass();
-        speed = playerClass.GetSpeed();
-        shootDamage = playerClass.GetDamage();
-        shootCooldown = playerClass.GetFireRate();
-        
-        healthPlayer.SetLife(playerClass.GetLife());
-        Debug.Log("Vida nada mas empezar: " + healthPlayer.GetHealth());
-        
+
     }
     private void Update()
     {
@@ -126,7 +147,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         float rotationZ = isFlipped ? 180 : 0;
         if (PhotonNetwork.CurrentRoom != null)
         {
-            switch (classType) {
+            switch (classPlayer.GetClassType()){
                 case Class.ClassType.LIGHT:
                     bullet = PhotonNetwork.Instantiate("LightBullet", bulletSpawn.position, Quaternion.Euler(0, 0, rotationZ));
                     break;

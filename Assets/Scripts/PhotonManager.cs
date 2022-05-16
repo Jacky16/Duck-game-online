@@ -9,6 +9,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 {
     public static PhotonManager instance;
     public string nickEnemy;
+    public Class playerClass;
+    public Class enemyClass;
     private void Awake()
     {
         if(instance != null && instance != this)
@@ -20,6 +22,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             instance = this;
             DontDestroyOnLoad(this);
             PhotonConnect();
+            Debug.Log("Estoy en la escena de salas y soy " + PhotonNetwork.NickName + " : " + NetworkManager.instance.GetCurrentUser().GetNickName());
         }
     }
 
@@ -56,9 +59,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log("Me he unido a la Sala" + PhotonNetwork.CurrentRoom.Name + "con" 
             + PhotonNetwork.CurrentRoom.PlayerCount + "Jugadores conectados a ellas");
         
-
-        
-        
+      
         Debug.Log("Has joined: " + NetworkManager.instance.GetCurrentUser().GetNickName());
 
         foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
@@ -68,9 +69,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                 nickEnemy = player.NickName;
 
                 //Conseguir Query para obtneer clase enemigo
+                NetworkManager.instance.SendNicknameToGetClass(nickEnemy);
             }
-        }           
-      
+        }                 
     }
     
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -88,9 +89,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 nickEnemy = newPlayer.NickName;
-                PhotonNetwork.LoadLevel("GameplayScene");
+                NetworkManager.instance.SendNicknameToGetClass(nickEnemy);
+                Invoke("LoadGameplay", 5);
             }
         }     
+    }
+
+    void LoadGameplay()
+    {
+        PhotonNetwork.LoadLevel("GameplayScene");
     }
 
     public void LeaveCurrentRoom()
@@ -98,5 +105,5 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom(true);
     }
 
-    
+   
 }

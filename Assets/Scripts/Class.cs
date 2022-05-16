@@ -2,16 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Class : ScriptableObject
+public class Class
 {
-    int idDatabase;
-    string name;
-    float life;
-    float speed;
-    float fireRate;
-    float damage;
+    public int idDatabase;
+    public string name;
+    public float life;
+    public float speed;
+    public float fireRate;
+    public float damage;
     public enum ClassType { HEAVY, LIGHT }
     ClassType classType;
+    public Class()
+    {
+        
+    }
 
     public Class(string name,float speed, float fireRate, float life,float damage, int idBDD)
     {
@@ -21,8 +25,17 @@ public class Class : ScriptableObject
         this.fireRate = fireRate;
         this.damage = damage;
         this.idDatabase = idBDD;
-        System.Enum.TryParse(name,true, out classType);
-        
+
+        switch (name)
+        {
+            case "Heavy":
+                classType = ClassType.HEAVY;
+                break;
+            case "Light":
+                classType = ClassType.LIGHT;
+                break;
+        }
+
     }
     public string GetNameClass(){
         return name;
@@ -50,5 +63,9 @@ public class Class : ScriptableObject
     public float GetDamage()
     {
         return damage;
+    }
+    public int GetIdBDD()
+    {
+        return idDatabase;
     }
 }

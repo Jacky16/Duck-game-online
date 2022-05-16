@@ -2,17 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class User: ScriptableObject
+public class User
 {
-    string nick;
-    int idInDatabase;
-    Class classs;
+    public string nick;
+    public int idInDatabase;
+    public int idClassAssigned;
+    public Class classs;
 
-
-    public User(string username,int id)
+    public User()
+    {
+        
+    }
+    public User(string username,int idDB,int idClass)
     {
         this.nick = username;
-        this.idInDatabase = id;
+        this.idInDatabase = idDB;
+        this.idClassAssigned = idClass;
     }
 
     public string GetNickName()
@@ -30,6 +35,10 @@ public class User: ScriptableObject
     public Class GetClass()
     {
         return classs;
+    }
+    public int GetIdClassAssigned()
+    {
+        return idClassAssigned;
     }
 
 }
