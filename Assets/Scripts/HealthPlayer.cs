@@ -71,6 +71,7 @@ public class HealthPlayer : MonoBehaviour
     private void Die()
     {
         anim.SetTrigger("death");
+        GetComponent<PlayerController>().BlockMovement();
     }
 
     public bool IsMíne()

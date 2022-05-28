@@ -25,7 +25,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             Debug.Log("Estoy en la escena de salas y soy " + PhotonNetwork.NickName + " : " + NetworkManager.instance.GetCurrentUser().GetNickName());
         }
     }
-
+    
     private void PhotonConnect()
     {
         PhotonNetwork.ConnectUsingSettings();

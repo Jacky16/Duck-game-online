@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [SerializeField] float shootCooldown;
     float shootCooldownTimer;
 
+    bool canMove = true;
     Rigidbody2D rb2d;
     Vector2 axis;
     SpriteRenderer spriteRenderer;
@@ -79,12 +80,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
 
     }
+
     private void Start()
     {
-        
-
-
+        canMove = true;
     }
+
     private void Update()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
@@ -107,24 +108,27 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     void CheckInputs()
     {
-        axis.x = Input.GetAxis("Horizontal");
+        if (canMove)
+        {
+            axis.x = Input.GetAxis("Horizontal");
         
-        if (axis.x < 0 && !isFlipped)
-        {
-            Flip();
-        }
-        else if (axis.x > 0 && isFlipped)
-        {
-            Flip();
-        }
+            if (axis.x < 0 && !isFlipped)
+            {
+                Flip();
+            }
+            else if (axis.x > 0 && isFlipped)
+            {
+                Flip();
+            }
             //Jump
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            Jump();
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            Shoot();
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                Jump();
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                Shoot();
+            }            
         }
     }
 
@@ -170,7 +174,10 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         transform.rotation = enemyTransform.rotation;
         //healthPlayer.SetLife(enemyTransform.currHealth);
     }
-    
+    public void BlockMovement()
+    {
+        canMove = false;
+    }
     
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
