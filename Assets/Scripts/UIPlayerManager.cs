@@ -16,12 +16,9 @@ public class UIPlayerManager : MonoBehaviour
 
     void LoadNamePlayer()
     {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            if (player.NickName == PhotonNetwork.NickName)
-            {
-                namePlayerText.text = player.NickName;
-            }
-        }
+        //Get nickname
+        string nickname = GetComponent<PhotonView>().Owner.NickName;
+        //Set name
+        namePlayerText.text = nickname;
     }
 }

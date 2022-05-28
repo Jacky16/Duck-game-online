@@ -9,11 +9,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform spawnPlayer1;
     [SerializeField] Transform spawnPlayer2;
     public static Class playerClass;
-    
+    public static GameManager singletone;
     
     private void Awake()
     {
-
+        if (singletone == null)
+        {
+            singletone = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (player.NickName == PhotonNetwork.NickName)
@@ -49,5 +56,22 @@ public class GameManager : MonoBehaviour
                 }
             }
         }         
+    }
+
+    public void FinishGame()
+    {
+        //Get all HealthPlayer of scene insade of tag player
+        HealthPlayer[] healthPlayers = GameObject.FindObjectsOfType<HealthPlayer>();
+
+        foreach (HealthPlayer healthPlayer in healthPlayers)
+        {
+            if (!healthPlayer.isDeath)
+            {
+                string playerWinner = healthPlayer.GetComponent<PhotonView>().Owner.NickName;
+                Debug.Log("El jugador " + playerWinner + " ha ganado");
+            }
+        }
+
+
     }
 }

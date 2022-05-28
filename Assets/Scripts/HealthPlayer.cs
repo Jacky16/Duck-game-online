@@ -12,7 +12,7 @@ public class HealthPlayer : MonoBehaviour
     float life;
     [SerializeField] Image imageLife;
     public PhotonView photonView {  get;  private set; }
-
+    public bool isDeath;
     float maxLife;
     Animator anim;
 
@@ -20,16 +20,10 @@ public class HealthPlayer : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         photonView = GetComponent<PhotonView>();
-        
-        
     }
     private void Start()
     {
-        //maxLife = life;
-    }
-    private void Update()
-    {
-        
+        isDeath = false;
     }
 
     public void AddHealth(float amount)
@@ -72,6 +66,8 @@ public class HealthPlayer : MonoBehaviour
     {
         anim.SetTrigger("death");
         GetComponent<PlayerController>().BlockMovement();
+        isDeath = true;
+        GameManager.singletone.FinishGame();
     }
 
     public bool IsMíne()
