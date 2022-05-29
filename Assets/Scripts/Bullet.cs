@@ -9,6 +9,8 @@ public class Bullet : MonoBehaviour
     Rigidbody2D rb2d;
     float damage = 10;
     HealthPlayer healthPlayerEnemy;
+    [SerializeField] GameObject vfx_hit;
+    [SerializeField] Transform spawnVFX;
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
@@ -30,11 +32,14 @@ public class Bullet : MonoBehaviour
             healthPlayer.photonView.RPC("TakeDamage", RpcTarget.All, damage);
         }
         photonView.RPC("NetworkDestroy", RpcTarget.All);
+        
     }
     
     [PunRPC]
     void NetworkDestroy()
     {
+        //Instantiate Vfx
+        Instantiate(vfx_hit, transform.position, transform.rotation,null);
         Destroy(gameObject);
     }
 }

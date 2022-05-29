@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [SerializeField] float shootDamage;
     [SerializeField] float shootCooldown;
     float shootCooldownTimer;
+    float nextFire = 0;
 
     bool canMove = true;
     Rigidbody2D rb2d;
@@ -133,10 +134,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             {
                 Jump();
             }
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && Time.time > nextFire)
             {
+                nextFire = Time.time + shootCooldown;
                 Shoot();
-            }            
+            }
+                  
         }
     }
 
@@ -180,7 +183,6 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         rb2d.position = enemyTransform.position;
         transform.rotation = enemyTransform.rotation;
-        //healthPlayer.SetLife(enemyTransform.currHealth);
     }
     public void BlockMovement()
     {
