@@ -39,7 +39,7 @@ public class Bullet : MonoBehaviour
     void NetworkDestroy()
     {
         //Instantiate Vfx
-        Instantiate(vfx_hit, transform.position, transform.rotation,null);
+        Instantiate(vfx_hit, spawnVFX.position, transform.rotation,null);
         Destroy(gameObject);
     }
 }
