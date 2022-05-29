@@ -65,16 +65,16 @@ MonoBehaviour:
     value: 0
   saturation:
     overrideState: 1
-    value: 0
+    value: -27.7
   brightness:
     overrideState: 1
-    value: 14.03
+    value: 10
   postExposure:
     overrideState: 1
     value: 0
   contrast:
     overrideState: 1
-    value: 30
+    value: 15
   mixerRedOutRedIn:
     overrideState: 0
     value: 100
@@ -104,7 +104,7 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: -0.06745362}
+    value: {x: 1, y: 1, z: 1, w: -0.1349073}
   gamma:
     overrideState: 0
     value: {x: 1, y: 1, z: 1, w: 0.26981452}
@@ -1329,13 +1329,13 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 30
+    value: 33.76
   intensityX:
     overrideState: 1
     value: 1
   intensityY:
-    overrideState: 0
-    value: 1
+    overrideState: 1
+    value: 0.5
   centerX:
     overrideState: 0
     value: 0
@@ -1343,8 +1343,8 @@ MonoBehaviour:
     overrideState: 0
     value: 0
   scale:
-    overrideState: 0
-    value: 0.41
+    overrideState: 1
+    value: 0.99
 --- !u!114 &-3242693239945707069
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1450,14 +1450,14 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   colored:
-    overrideState: 0
+    overrideState: 1
     value: 1
   intensity:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 0.7
   size:
-    overrideState: 0
-    value: 1
+    overrideState: 1
+    value: 0.7
   lumContrib:
-    overrideState: 0
+    overrideState: 1
     value: 0.8
