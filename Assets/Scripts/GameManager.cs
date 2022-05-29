@@ -6,13 +6,20 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Spawners")]
     [SerializeField] Transform spawnPlayer1;
     [SerializeField] Transform spawnPlayer2;
+
+    [SerializeField] GameObject canvasWin;
+    [SerializeField] GameObject canvasDefeat;
     public static Class playerClass;
     public static GameManager singletone;
     
     private void Awake()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+
         if (singletone == null)
         {
             singletone = this;
@@ -21,14 +28,19 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        InitPlayers();
+    }
+
+    private void InitPlayers()
+    {
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (player.NickName == PhotonNetwork.NickName)
             {
                 Class classPlayerInRoom = NetworkManager.instance.GetClassByNickname(player.NickName);
-                
+
                 Transform posSpawn;
-                
+
                 if (player.IsMasterClient)
                 {
                     posSpawn = spawnPlayer1;
@@ -38,7 +50,7 @@ public class GameManager : MonoBehaviour
                 {
                     posSpawn = spawnPlayer2;
                 }
-                
+
                 switch (classPlayerInRoom.GetNameClass())
                 {
                     case "Light":
@@ -55,7 +67,7 @@ public class GameManager : MonoBehaviour
                         break;
                 }
             }
-        }         
+        }
     }
 
     public void FinishGame()
@@ -65,13 +77,27 @@ public class GameManager : MonoBehaviour
 
         foreach (HealthPlayer healthPlayer in healthPlayers)
         {
-            if (!healthPlayer.isDeath)
+            bool isOwner = healthPlayer.GetComponent<PhotonView>().IsMine;
+            if (isOwner)
             {
-                string playerWinner = healthPlayer.GetComponent<PhotonView>().Owner.NickName;
-                Debug.Log("El jugador " + playerWinner + " ha ganado");
+                Time.timeScale = 0;
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                if (healthPlayer.isDeath)
+                {
+                    canvasDefeat.SetActive(true);
+                }
+                else
+                {
+                    canvasWin.SetActive(true);
+                }               
             }
+            
         }
+    }
 
-
+    public void QuitApplication()
+    {
+        Application.Quit();
     }
 }

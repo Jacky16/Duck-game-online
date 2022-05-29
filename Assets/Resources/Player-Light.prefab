@@ -428,6 +428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageLife: {fileID: 4925604041277734646}
+  isDeath: 0
 --- !u!114 &6483748750077290324
 MonoBehaviour:
   m_ObjectHideFlags: 0

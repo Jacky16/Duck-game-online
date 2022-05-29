@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviourPun, IPunObservable
 {
@@ -57,6 +58,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         PhotonNetwork.SendRate = 50;
         PhotonNetwork.SerializationRate = 50;
 
+
         //List of all the players in room photon
         Debug.Log($"El {gameObject.name} tiene el nick {NetworkManager.currentUser.GetNickName()}");
         if (photonView.IsMine)
@@ -67,6 +69,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             shootCooldown = classPlayer.GetFireRate();
             healthPlayer.SetLife(classPlayer.GetLife());
             Debug.Log($"Soy {PhotonNetwork.NickName} mi clase es {classPlayer.GetNameClass()} mi speed es {speed} y mi vida es {healthPlayer.GetHealth()}");
+
+            //Init Camera
+            CinemachineVirtualCamera virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
+            virtualCamera.Priority = 1;
+            virtualCamera.Follow = transform;
+            
         }
         else
         {
